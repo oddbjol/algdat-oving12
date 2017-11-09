@@ -1,9 +1,8 @@
 require("google-closure-library");
 goog.require('goog.structs.PriorityQueue');
 
-let MyNode = require("./MyNode");
-
 let _ = require("lodash");
+let MyNode = require("./MyNode");
 
 class Compressor{
 
@@ -11,53 +10,7 @@ class Compressor{
         this.encoding = {};
     }
 
-    runLengthCompress(text){
-        let out = "";
-        let prev = null;
-        let num = 0;
-        for(let i = 0; i < text.length; i++){
-            let char = text[i];
-            if((char != prev && prev != null) || i == text.length-1){ // flush{
-                if(num > 1)
-                    out += "["+num+"]" + prev;
-                else
-                    out += prev;
-                num = 0;
-            }
-
-            num++;
-            prev = char;
-        }
-
-        out += prev;
-
-        return out;
-    }
-
-    runLengthDecompress(text){
-        let out = "";
-
-        for(let i = 0; i < text.length; i++){
-            let times = 1;
-            if(text[i] == '['){
-                times = "";
-                i++;
-                do{
-                    times += text[i];
-                    i++;
-                }
-                while(text[i] != ']');
-
-                i++;
-            }
-
-            for(let j = 0; j < times; j++)
-                out += text[i];
-        }
-        return out;
-    }
-
-    getFrequencies(text){
+    static getFrequencies(text){
             let frequencies = {};
 
             for(let char of text){
@@ -95,13 +48,15 @@ class Compressor{
     }
 
     huffmanCode(text){
-        let frequencies = this.getFrequencies(text);
-        console.log("freq: " + JSON.stringify(frequencies));
+        let frequencies = Compressor.getFrequencies(text);
         let tree = this.makeHuffmanTree(frequencies);
 
         this.encoding = {};
 
         this.generateEncoding(tree, "");
+
+        console.log("frequencies: " + JSON.stringify(frequencies));
+        console.log("encoding: " + JSON.stringify(this.encoding));
 
         let out = "";
 
@@ -109,17 +64,20 @@ class Compressor{
             out += this.encoding[char];
         }
 
-        out = this.fromBitString(out);
+        out = Compressor.fromBitString(out);
         return {frequencies: frequencies, data: out};
     }
 
     huffmanDecode(text, frequencies){
-        console.log("freq: " + JSON.stringify(frequencies));
         let tree = this.makeHuffmanTree(frequencies);
         this.encoding = {};
         this.generateEncoding(tree, "");
 
-        text = this.toBitString(text);
+        console.log("frequencies: " + JSON.stringify(frequencies));
+        console.log("encoding: " + JSON.stringify(this.encoding));
+
+
+        text = Compressor.toBitString(text);
         let reverse_encoding = [];
         for(let char in this.encoding)
             reverse_encoding[this.encoding[char]] = char;
@@ -150,7 +108,7 @@ class Compressor{
             this.generateEncoding(node.right, tmp + "1");
     }
 
-    toBitString(text){
+    static toBitString(text){
         let out = "";
         for(let char of text){
             let bits = char.charCodeAt(0).toString(2);
@@ -160,7 +118,7 @@ class Compressor{
         return out;
     }
 
-    fromBitString(bit_string){
+    static fromBitString(bit_string){
         let out = "";
         for(let i = 0; i < bit_string.length; i+= 8){
             let substring = bit_string.slice(i,i+8);
