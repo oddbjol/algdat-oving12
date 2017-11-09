@@ -1,6 +1,5 @@
 require("google-closure-library");
 goog.require('goog.structs.PriorityQueue');
-
 let _ = require("lodash");
 let MyNode = require("./MyNode");
 
@@ -29,6 +28,9 @@ class Compressor{
             let node = new MyNode(char, frequencies[char]);
             queue.enqueue(frequencies[char], node);
         }
+        // The virtual terminator symbol needs to be a part of the huffman tree.
+        // Assign frequency of 1 to terminator, this way it won't waste "good" spots in the tree.
+        queue.enqueue(0, new MyNode("terminator", 1));
 
         while(queue.getCount() > 1){
             let left = queue.dequeue();
@@ -63,6 +65,7 @@ class Compressor{
         for(let char of text){
             out += this.encoding[char];
         }
+        out += this.encoding["terminator"]; // Add the terminating bit pattern at end.
 
         out = Compressor.fromBitString(out);
         return {frequencies: frequencies, data: out};
@@ -91,6 +94,9 @@ class Compressor{
                 key += text[pos];
                 pos++;
             }
+            // If the bit pattern matches the terminator, we are done.
+            if(reverse_encoding[key] == "terminator")
+                break;
             decoded += reverse_encoding[key];
         }
         return decoded;
@@ -114,7 +120,6 @@ class Compressor{
             let bits = char.charCodeAt(0).toString(2);
             out += _.padStart(bits, 8, "0");
         }
-
         return out;
     }
 
@@ -122,6 +127,8 @@ class Compressor{
         let out = "";
         for(let i = 0; i < bit_string.length; i+= 8){
             let substring = bit_string.slice(i,i+8);
+            // If there are trailing bits at the end of the bit string,
+            // pad in zeroes so we have a whole byte at the end.
             substring = _.padEnd(substring, 8, '0');
             out += String.fromCharCode(parseInt(substring.toString(2),2));
         }
