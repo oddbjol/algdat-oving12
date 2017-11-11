@@ -10,11 +10,9 @@ fs.stat(argv[0],function(error, stats){
         let buffer = new Buffer(stats.size);
         fs.readSync(fd, buffer, 0, stats.size, 0);
         let frequencies = {};
-        for(let i = 0; i < 256; i++){
-            let numChar = buffer.readInt32LE(i*4);
-            if(numChar > 0)
-                frequencies[String.fromCharCode(i)] = numChar;
-        }
+        for(let i = 0; i < 256; i++)
+            frequencies[i] = buffer.readInt32LE(i*4);
+
         let data = buffer.toString('binary',256*4);
         let decompressed = new Huffman().huffmanDecode(data, frequencies);
         fs.writeFileSync(argv[1],decompressed,'utf8');

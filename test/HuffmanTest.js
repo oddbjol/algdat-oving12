@@ -7,9 +7,9 @@ describe('Huffman', function(){
     it('getFrequencies(text)',function() {
         let frequencies = Huffman.getFrequencies("test");
 
-        assert.equal(frequencies.t,2, "there should be two t's");
-        assert.equal(frequencies.e,1, "there should be one e");
-        assert.equal(frequencies.s,1, "there should be one s");
+        assert.equal(frequencies['t'.charCodeAt(0)],2, "there should be two t's");
+        assert.equal(frequencies['e'.charCodeAt(0)],1, "there should be one e");
+        assert.equal(frequencies['s'.charCodeAt(0)],1, "there should be one s");
     });
 
     it('makeHuffmanTree(frequencies)',function(){
@@ -45,13 +45,18 @@ describe('Huffman', function(){
     });
 
     it("huffmanCode(text)",function(){
-        let compressed = {"frequencies":{"t":2,"e":1,"s":1},"data":'y'};
+        let compressed = {frequencies:{"t":2,"e":1,"s":1},data:'y'};
         let result = new Huffman().huffmanCode("test");
         assert.equal(result.data, compressed.data);
     });
 
     it("huffmanDecode(text,frequencies)",function(){
-        let compressed = {"frequencies":{"t":2,"e":1,"s":1},"data":'y'};
+        let frequencies = {};
+        frequencies['t'.charCodeAt(0)] = 2;
+        frequencies['e'.charCodeAt(0)] = 1;
+        frequencies['s'.charCodeAt(0)] = 1;
+
+        let compressed = {frequencies: frequencies, data: 'y'};
         let result = new Huffman().huffmanDecode(compressed.data, compressed.frequencies);
         assert.equal(result,"test");
     });

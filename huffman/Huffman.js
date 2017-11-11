@@ -23,16 +23,16 @@ class Huffman{
      * }
      *
      * @param An ascii string.
-     * @returns {{}} A map of letter frequencies.
+     * @returns [] A map of letter frequencies.
      */
     static getFrequencies(text){
-            let frequencies = {};
+            let frequencies = [];
+
+            for(let i = 0; i < 256; i++)
+                frequencies[i] = 0;
 
             for(let char of text){
-                if(!frequencies[char])
-                    frequencies[char] = 1;
-                else
-                    frequencies[char]++;
+                frequencies[char.charCodeAt(0)]++;
             }
 
             return frequencies;
@@ -43,12 +43,14 @@ class Huffman{
      *
      * For example, given the following frequencies:
      *
-     * {
-     *  a: 2,
-     *  b: 5,
-     *  c: 4,
-     *  d: 1
-     * }
+     * [
+     *  ...,
+     *  ascii code of a: 2,
+     *  ascii code of b: 5,
+     *  ascii code of c: 4,
+     *  ascii code of d: 1,
+     *  ...
+     * ]
      *
      * , the following tree might be produced:
      *
@@ -66,9 +68,12 @@ class Huffman{
      */
     static makeHuffmanTree(frequencies){
         let queue = new goog.structs.PriorityQueue();
-        for(let char in frequencies){
-            let node = new MyNode(char, frequencies[char]);
-            queue.enqueue(frequencies[char], node);
+        for(let charCode in frequencies){
+            if(frequencies[charCode] > 0){
+                let node = new MyNode(charCode, frequencies[charCode]);
+                queue.enqueue(frequencies[charCode], node);
+            }
+
         }
         // The virtual terminator symbol needs to be a part of the huffman tree.
         // Assign frequency of 1 to terminator, this way it won't waste "good" spots in the tree.
@@ -87,6 +92,8 @@ class Huffman{
 
             queue.enqueue(sum_frequency, parent);
         }
+
+        console.log("tree : " + queue.peek().toString());
 
         return queue.dequeue(); // root of huffman tree
     }
@@ -110,7 +117,7 @@ class Huffman{
         let out = "";
 
         for(let char of text){
-            out += this.encoding[char];
+            out += this.encoding[char.charCodeAt(0)];
         }
         out += this.encoding["terminator"]; // Add the terminating bit pattern at end.
 
@@ -150,7 +157,7 @@ class Huffman{
             // If the bit pattern matches the terminator, we are done.
             if(reverse_encoding[key] == "terminator")
                 break;
-            decoded += reverse_encoding[key];
+            decoded += String.fromCharCode(reverse_encoding[key]);
         }
         return decoded;
     }
@@ -166,15 +173,23 @@ class Huffman{
      *           c   g     *    f
      *                   d   c
      *
-     * The following encoding will be returned:
+     * The following encoding array will be returned:
      *
-     * {
-     *  c: '00',
-     *  g: '01',
-     *  d: '100',
-     *  c: '101',
-     *  f: '11'
-     * }
+     * [0,
+     * 0,
+     * ...,
+     *  ascii code of c: '00',
+     *  ascii code of g: '01',
+     *  ascii code of d: '100',
+     *  ascii code of c: '101',
+     *  ascii code of f: '11',
+     *  0,
+     *  0,
+     *  ...
+     * ]
+     *
+     * The values of characters that weren't used will be 0.
+     * The frequency of a is stored in index 97, as that is the ascii code of 'a'.
      *
      * @param node root node of huffman tree, or current node in recursive call
      * @param bit_string Only for internal use. Used for calculating bit strings through recursion.
