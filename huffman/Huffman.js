@@ -64,7 +64,7 @@ class Huffman{
      * @param frequencies An object with syntax: {a: 2, b: 3} etc
      * @returns {MyNode} Root node of the huffman tree.
      */
-    makeHuffmanTree(frequencies){
+    static makeHuffmanTree(frequencies){
         let queue = new goog.structs.PriorityQueue();
         for(let char in frequencies){
             let node = new MyNode(char, frequencies[char]);
@@ -72,7 +72,7 @@ class Huffman{
         }
         // The virtual terminator symbol needs to be a part of the huffman tree.
         // Assign frequency of 1 to terminator, this way it won't waste "good" spots in the tree.
-        queue.enqueue(0, new MyNode("terminator", 1));
+        queue.enqueue(0, new MyNode("terminator", 0));
 
         while(queue.getCount() > 1){
             let left = queue.dequeue();
@@ -98,7 +98,7 @@ class Huffman{
      */
     huffmanCode(text){
         let frequencies = Huffman.getFrequencies(text);
-        let tree = this.makeHuffmanTree(frequencies);
+        let tree = Huffman.makeHuffmanTree(frequencies);
 
         this.encoding = {};
 
@@ -125,7 +125,7 @@ class Huffman{
      * @returns {string} The decoded text
      */
     huffmanDecode(text, frequencies){
-        let tree = this.makeHuffmanTree(frequencies);
+        let tree = Huffman.makeHuffmanTree(frequencies);
         this.encoding = {};
         this.generateEncoding(tree, "");
 
