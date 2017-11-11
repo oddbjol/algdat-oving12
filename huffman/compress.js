@@ -3,7 +3,7 @@ let fs = require("fs");
 let argv = process.argv.slice(2);
 
 
-let data = fs.readFileSync(argv[0],'ascii');
+let data = fs.readFileSync(argv[0],'binary');
 let huffman = new Huffman();
 let compressed = huffman.huffmanCode(data);
 
