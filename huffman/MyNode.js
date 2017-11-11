@@ -1,5 +1,3 @@
-let _ = require("lodash");
-
 class MyNode{
     constructor(key, value){
         this.key = key;
