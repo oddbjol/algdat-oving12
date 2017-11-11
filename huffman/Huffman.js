@@ -2,6 +2,7 @@ require("google-closure-library");
 goog.require('goog.structs.PriorityQueue');
 let _ = require("lodash");
 let MyNode = require("./MyNode");
+let PrintTree = require("./PrintTree");
 
 class Huffman{
 
@@ -93,7 +94,8 @@ class Huffman{
             queue.enqueue(sum_frequency, parent);
         }
 
-        console.log("tree : " + queue.peek().toString());
+        console.log("Here's the Huffman tree:");
+        PrintTree(queue.peek());
 
         return queue.dequeue(); // root of huffman tree
     }

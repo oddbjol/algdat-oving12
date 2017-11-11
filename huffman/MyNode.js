@@ -1,5 +1,7 @@
+let _ = require("lodash");
+
 class MyNode{
-    constructor(key,value){
+    constructor(key, value){
         this.key = key;
         this.value = value;
 
@@ -7,23 +9,22 @@ class MyNode{
         this.right = null;
     }
 
-    isLeafNode(){
-        return (!this.left && !this.right);
+    // Return a number if the number is stored in both key and val.
+    // Return the character if there's a difference.
+    // This is because some of the numbers stored in key are charcodes, some are just numbers.
+    get keyChar(){
+        let out;
+
+        if(this.key == this.value)
+            out = this.key;
+        else
+            out = String.fromCharCode(this.key);
+
+        return out;
     }
 
-    toString(depth = 0){
-        let string = "";
-        for(let i = 0; i < depth; i++)
-            string += "    ";
-
-        string += "key: " + this.key + " val: " + this.value + "\n";
-
-        if(this.left)
-            string += this.left.toString(depth + 1);
-        if(this.right)
-            string += this.right.toString(depth + 1);
-
-        return string;
+    isLeafNode(){
+        return (!this.left && !this.right);
     }
 }
 
