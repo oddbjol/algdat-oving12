@@ -3,13 +3,11 @@
  * @type {MyNode}
  */
 
-let MyNode = require("./MyNode");
-// Find the maximum height of the binary tree
 function maxHeight(p) {
     if (!p) return 0;
     var leftHeight = maxHeight(p.left);
     var rightHeight = maxHeight(p.right);
-    return (leftHeight > rightHeight) ? leftHeight + 1: rightHeight + 1;
+    return (leftHeight > rightHeight) ? leftHeight + 1 : rightHeight + 1;
 }
 
 var fillChar = " ";
@@ -31,9 +29,9 @@ function setfill(aChar) {
 function printBranches(branchLen, nodeSpaceLen, startLen, nodesInThisLevel, nodesQueue) {
     var cont = 0;
 
-    for (var i = 0; i < parseInt(nodesInThisLevel / 2); i++) {
-        out += ((i == 0) ? setw(startLen-1) : setw(nodeSpaceLen-2)) + "" + ((nodesQueue[cont++]) ? "/" : " ");
-        out += setw(2*branchLen+2) + "" + ((nodesQueue[cont++]) ? "\\" : " ");
+    for (var i = 0; i < parseInt(nodesInThisLevel / 2) ; i++) {
+        out += ((i == 0) ? setw(startLen - 1) : setw(nodeSpaceLen - 2)) + "" + ((nodesQueue[cont++]) ? "/" : " ");
+        out += setw(2 * branchLen + 2) + "" + ((nodesQueue[cont++]) ? "\\" : " ");
     }
 
     out += (parseInt(nodesInThisLevel / 2) == 0) ? "\n" : "\n";
@@ -44,9 +42,13 @@ function printNodes(branchLen, nodeSpaceLen, startLen, nodesInThisLevel, nodesQu
     var cont = 0;
 
     for (var i = 0; i < nodesInThisLevel; i++, cont++) {
-        out += ((i == 0) ? setw(startLen) : setw(nodeSpaceLen)) + "" + ((nodesQueue[cont] && nodesQueue[cont].left) ? setfill('_') : setfill(" "));
-        out += setw(branchLen) + ((nodesQueue[cont]) ? nodesQueue[cont].keyChar : "");
-        out += ((nodesQueue[cont] && nodesQueue[cont].right) ? setfill('_') : setfill(" ")) + setw(branchLen) + "" + setfill(" ");
+        var spaceAdjust = (nodesQueue[cont]) ? ("" + nodesQueue[cont].keyChar).length : 0;
+        var odd = (spaceAdjust % 2 == 0) ? 1 : 0;
+        spaceAdjust = parseInt(spaceAdjust / 2);
+
+        out += ((i == 0) ? setw(startLen) : setw(nodeSpaceLen+1)) + "" + ((nodesQueue[cont] && nodesQueue[cont].left) ? setfill('_') : setfill(" "));
+        out += setw(branchLen - spaceAdjust) + ((nodesQueue[cont]) ? nodesQueue[cont].keyChar : "");
+        out += ((nodesQueue[cont] && nodesQueue[cont].right) ? setfill('_') : setfill(" ")) + setw(branchLen - spaceAdjust + odd) + "" + setfill(" ");
     }
 
     out += "\n";
@@ -57,8 +59,12 @@ function printLeaves(indentSpace, level, nodesInThisLevel, nodesQueue) {
     var cont = 0;
 
     for (var i = 0; i < nodesInThisLevel; i++, cont++) {
-        out += ((i == 0) ? setw(indentSpace) : setw(2*level+1)) + ((nodesQueue[cont]) ? nodesQueue[cont].keyChar : "");
+        var spaceAdjust = (nodesQueue[cont]) ? ("" + nodesQueue[cont].keyChar).length : 0;
+        spaceAdjust = (spaceAdjust == 1) ? 0 : spaceAdjust - 1;
+        out += ((i == 0) ? setw(indentSpace) : setw((2*level + 1)- spaceAdjust)) + ((nodesQueue[cont]) ? nodesQueue[cont].keyChar : "");
     }
+
+    out += "\n";
 }
 
 // Pretty formatting of a binary tree to the output stream
@@ -69,17 +75,17 @@ function printPretty(root, level, indentSpace) {
     var h = maxHeight(root);
     var nodesInThisLevel = 1;
 
-    var branchLen = 2*(parseInt(Math.pow(2.0,h))-1) - (3-level)*parseInt(Math.pow(2.0,h-1));  // eq of the length of branch for each node of each level
-    var nodeSpaceLen = 2 + (level+1)*parseInt(Math.pow(2.0,h));  // distance between left neighbor node's right arm and right neighbor node's left arm
-    var startLen = branchLen + (3-level) + indentSpace;  // starting space to the first node to print of each level (for the left most node of each level only)
+    var branchLen = 2 * (parseInt(Math.pow(2.0, h)) - 1) - (3 - level) * parseInt(Math.pow(2.0, h - 1));  // eq of the length of branch for each node of each level
+    var nodeSpaceLen = 2 + (level + 1) * parseInt(Math.pow(2.0, h));  // distance between left neighbor node's right arm and right neighbor node's left arm
+    var startLen = branchLen + (3 - level) + indentSpace;  // starting space to the first node to print of each level (for the left most node of each level only)
 
     nodesQueue = [];
     nodesQueue.push(root);
     for (var r = 1; r < h; r++) {
         printBranches(branchLen, nodeSpaceLen, startLen, nodesInThisLevel, nodesQueue);
-        branchLen = branchLen/2 - 1;
-        nodeSpaceLen = nodeSpaceLen/2 + 1;
-        startLen = branchLen + (3-level) + indentSpace;
+        branchLen = branchLen / 2 - 1;
+        nodeSpaceLen = nodeSpaceLen / 2 + 1;
+        startLen = branchLen + (3 - level) + indentSpace;
         printNodes(branchLen, nodeSpaceLen, startLen, nodesInThisLevel, nodesQueue);
 
         for (var i = 0; i < nodesInThisLevel; i++) {
@@ -98,11 +104,15 @@ function printPretty(root, level, indentSpace) {
 
     printBranches(branchLen, nodeSpaceLen, startLen, nodesInThisLevel, nodesQueue);
     printLeaves(indentSpace, level, nodesInThisLevel, nodesQueue);
+
+    console.log(out);
+}
+
+function PrintTree(root){
+    "use strict";
+    printPretty(root, 1, 0)
 }
 
 var out = "";
-function drawATree(root) {
-    printPretty(root, 1, 0);
-    console.log(out);
-}
-module.exports = drawATree;
+
+module.exports = PrintTree;

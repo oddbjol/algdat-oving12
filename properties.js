@@ -1,5 +1,5 @@
 let properties = {
-  "debug": false
+  debug: true
 };
 
 module.exports = properties;
