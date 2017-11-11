@@ -15,9 +15,4 @@ fs.open(argv[1],"w", function(error, fd){
     buffer.write(compressed.data,256*4,compressed.data.length,'binary');
 
     fs.writeSync(fd, buffer, 0, buffer.length,0);
-
-
 });
-
-
-//fs.writeFileSync(argv[1],JSON.stringify(compressed),'utf8');

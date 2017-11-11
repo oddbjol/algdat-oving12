@@ -3,6 +3,7 @@ goog.require('goog.structs.PriorityQueue');
 let _ = require("lodash");
 let MyNode = require("./MyNode");
 let PrintTree = require("./PrintTree");
+let properties = require('../properties.js');
 
 class Huffman{
 
@@ -94,8 +95,10 @@ class Huffman{
             queue.enqueue(sum_frequency, parent);
         }
 
-        console.log("Here's the Huffman tree:");
-        PrintTree(queue.peek());
+        if(properties.debug){
+            console.log("Here's the Huffman tree:");
+            PrintTree(queue.peek());
+        }
 
         return queue.dequeue(); // root of huffman tree
     }
@@ -113,8 +116,10 @@ class Huffman{
 
         this.generateEncoding(tree, "");
 
-        console.log("frequencies: " + JSON.stringify(frequencies));
-        console.log("encoding: " + JSON.stringify(this.encoding));
+        if(properties.debug){
+            console.log("frequencies: " + JSON.stringify(frequencies));
+            console.log("encoding: " + JSON.stringify(this.encoding));
+        }
 
         let out = "";
 
@@ -138,9 +143,10 @@ class Huffman{
         this.encoding = {};
         this.generateEncoding(tree, "");
 
-        console.log("frequencies: " + JSON.stringify(frequencies));
-        console.log("encoding: " + JSON.stringify(this.encoding));
-
+        if(properties.debug){
+            console.log("frequencies: " + JSON.stringify(frequencies));
+            console.log("encoding: " + JSON.stringify(this.encoding));
+        }
 
         text = Huffman.toBitString(text);
         let reverse_encoding = [];

@@ -17,5 +17,4 @@ fs.stat(argv[0],function(error, stats){
         let decompressed = new Huffman().huffmanDecode(data, frequencies);
         fs.writeFileSync(argv[1],decompressed,'binary');
     });
-
 });
